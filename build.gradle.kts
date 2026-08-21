@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.serialization") version libs.versions.kotlin.asProvider()
     alias(libs.plugins.commons)
     alias(libs.plugins.kotlinx.atomicfu)
+    alias(libs.plugins.resources)
     `maven-publish`
 }
 
@@ -55,6 +56,8 @@ kotlin {
                 api(libs.jetbrains.annotations.kmp)
                 api(libs.kotlin.coroutines)
                 api(libs.kotlin.serialization.json)
+                api(libs.kmp.zip)
+                api(libs.kmp.zip.okio)
             }
         }
         val commonTest by getting {
@@ -62,12 +65,14 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 implementation(libs.kotlin.coroutines.tests)
+                implementation(libs.resources)
             }
         }
-        val jvmMain by getting {
+        val nonJvmMain = create("nonJvmMain") {
+            dependsOn(commonMain.get())
+        }
+        jvmMain {
             dependencies {
-                api(libs.appache.commons.compress)
-
                 api(libs.asm)
                 api(libs.asm.tree)
 
@@ -81,15 +86,18 @@ kotlin {
                 implementation(kotlin("test-junit"))
             }
         }
-        val jsMain by getting {
-            dependencies {
-                implementation(npm("jszip", libs.versions.jszip.get()))
-            }
+
+        webMain {
+            dependsOn(nonJvmMain)
         }
-        val jsTest by getting {
+        jsTest {
             dependencies {
                 implementation(kotlin("test-js"))
             }
+        }
+
+        nativeMain {
+            dependsOn(nonJvmMain)
         }
     }
 }
