@@ -30,7 +30,9 @@ fun main(vararg args: String) {
     LOGGER.info { "Finished in ${totalTime.inWholeMilliseconds}ms" }
 }
 
-class Main: CliktCommand(printHelpOnEmptyArgs = true) {
+class Main: CliktCommand() {
+    override val printHelpOnEmptyArgs: Boolean = true
+
     companion object {
         val LOGGER = KotlinLogging.logger { }
     }

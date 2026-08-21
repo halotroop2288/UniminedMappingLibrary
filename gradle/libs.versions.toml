@@ -1,21 +1,21 @@
 [versions]
-asm = "9.7.1"
-okio = "3.7.0"
-kotlin = "2.1.20"
+asm = "9.10.1"
+okio = "3.18.1"
+kotlin = "2.4.10"
 
-commons = "1.0.2"
+commons = "1.0.5-SNAPSHOT"
 
-jb_annotations = "24.1.0"
+jb_annotations = "26.1.0"
 
 kmp_zip = "0.15.0"
 
-kotlin_serialization = "1.6.2"
-kotlin_coroutines = "1.9.0-RC"
-kotlin_logging = "6.0.1"
-kotlin_atomicfu = "0.27.0"
+kotlin_serialization = "1.11.0"
+kotlin_coroutines = "1.11.0"
+kotlin_logging = "8.0.4"
+kotlin_atomicfu = "0.33.0"
 
-clikt = "4.3.0"
-slf4j = "2.0.13"
+clikt = "5.1.0"
+slf4j = "2.0.18"
 
 resources = "0.16.0"
 
@@ -30,7 +30,7 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 commons_kt = { module = "xyz.wagyourtail.commons:commons-kt", version.ref = "commons" }
 
-jetbrains_annotations_kmp = { module = "com.sschr15.annotations:jb-annotations-kmp", version.ref = "jb_annotations" }
+jetbrains_annotations_kmp = { module = "org.jetbrains:annotations", version.ref = "jb_annotations" }
 kmp_zip = { module = "no.synth:kmp-zip", version.ref = "kmp_zip" }
 kmp_zip_okio = { module = "no.synth:kmp-zip-okio", version.ref = "kmp_zip" }
 
@@ -45,6 +45,15 @@ slf4j_api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j_simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 resources = { module = "com.goncalossilva:resources", version.ref = "resources" }
+
+[bundles]
+asm = [
+    "asm",
+#    "asm_commons",
+#    "asm_util",
+#    "asm_analysis",
+    "asm_tree"
+]
 
 [plugins]
 commons = { id = "xyz.wagyourtail.commons-gradle", version.ref = "commons" }

@@ -1,4 +1,6 @@
-import java.net.URI
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     kotlin("multiplatform") version libs.versions.kotlin.asProvider()
@@ -10,14 +12,13 @@ plugins {
 }
 
 allprojects {
-    apply(plugin = "base")
+    pluginManager.apply("base")
 
-    version = if (project.hasProperty("version_snapshot")) project.properties["version"] as String + "-SNAPSHOT" else project.properties["version"] as String
-    group = project.properties["group"] as String
+    group = project.property("group").toString()
+    base.archivesName = project.property("archives_base_name").toString()
 
-    base {
-        archivesName.set(project.properties["archives_base_name"] as String)
-    }
+    version = project.property("version") as String
+    if (project.hasProperty("version_snapshot")) version = "$version-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -34,21 +35,19 @@ kotlin {
         }
     }
     js {
+        useCommonJs()
         browser {
-            useCommonJs()
-
-            testTask {
-                enabled = false
-            }
         }
-        nodejs {
-            useCommonJs()
+        nodejs()
+        binaries.executable()
         }
         binaries.executable()
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(libs.commons.kt)
                 api(libs.kotlin.logging)
@@ -60,7 +59,7 @@ kotlin {
                 api(libs.kmp.zip.okio)
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
@@ -73,14 +72,13 @@ kotlin {
         }
         jvmMain {
             dependencies {
-                api(libs.asm)
-                api(libs.asm.tree)
+                api(libs.bundles.asm)
 
                 api(libs.slf4j.api)
                 api(libs.slf4j.simple)
             }
         }
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
@@ -102,14 +100,18 @@ kotlin {
     }
 }
 
+tasks.getByName("allTests") {
+    dependsOn(tasks.getByName("kotlinUpgradeYarnLock"))
+}
+
 publishing {
     repositories {
         maven {
             name = "WagYourMaven"
             url = if (project.hasProperty("version_snapshot")) {
-                URI.create("https://maven.wagyourtail.xyz/snapshots/")
+                uri("https://maven.wagyourtail.xyz/snapshots/")
             } else {
-                URI.create("https://maven.wagyourtail.xyz/releases/")
+                uri("https://maven.wagyourtail.xyz/releases/")
             }
             credentials {
                 username = project.findProperty("mvn.user") as String? ?: System.getenv("USERNAME")
