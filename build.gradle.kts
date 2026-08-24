@@ -40,9 +40,16 @@ kotlin {
         }
         nodejs()
         binaries.executable()
+    }
+    wasmJs {
+        browser {
         }
+        nodejs()
         binaries.executable()
     }
+
+    linuxX64()
+    linuxArm64()
 
     applyDefaultHierarchyTemplate()
 
