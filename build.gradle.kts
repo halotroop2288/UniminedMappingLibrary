@@ -13,12 +13,12 @@ plugins {
 
 allprojects {
     pluginManager.apply("base")
+    pluginManager.apply("xyz.wagyourtail.commons-gradle")
 
     group = project.property("group").toString()
     base.archivesName = project.property("archives_base_name").toString()
 
-    version = project.property("version") as String
-    if (project.hasProperty("version_snapshot")) version = "$version-SNAPSHOT"
+    commons.autoVersion(defaultSnapshot = true)
 
     repositories {
         mavenCentral()
@@ -113,16 +113,20 @@ tasks.getByName("allTests") {
 
 publishing {
     repositories {
-        maven {
-            name = "WagYourMaven"
-            url = if (project.hasProperty("version_snapshot")) {
-                uri("https://maven.wagyourtail.xyz/snapshots/")
-            } else {
-                uri("https://maven.wagyourtail.xyz/releases/")
+        val cred = Action<PasswordCredentials> {
+            username = project.findProperty("mvn.user") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("mvn.key") as String? ?: System.getenv("TOKEN")
+        }
+        if (project.hasProperty("version_release")) {
+            maven("https://maven.wagyourtail.xyz/releases/") {
+                name = "WagYourMaven-Releases"
+                credentials(cred)
             }
-            credentials {
-                username = project.findProperty("mvn.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("mvn.key") as String? ?: System.getenv("TOKEN")
+        }
+        if (project.hasProperty("version_snapshot")) {
+            maven("https://maven.wagyourtail.xyz/snapshots/") {
+                name = "WagYourMaven-Snapshots"
+                credentials(cred)
             }
         }
     }

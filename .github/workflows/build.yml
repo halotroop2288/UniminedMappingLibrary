@@ -24,7 +24,7 @@ jobs:
         run: ./gradlew build
 
       - name: Publish
-        run: ./gradlew publish -Pmvn.user=${{ secrets.MAVEN_USER }} -Pmvn.key=${{ secrets.MAVEN_TOKEN }}
+        run: ./gradlew publish -Pversion_release -Pmvn.user=${{ secrets.MAVEN_USER }} -Pmvn.key=${{ secrets.MAVEN_TOKEN }}
 
       - uses: actions/upload-artifact@v7
         with:
